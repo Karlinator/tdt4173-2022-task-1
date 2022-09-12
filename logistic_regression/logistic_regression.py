@@ -1,15 +1,19 @@
 import numpy as np 
+import numpy.typing as npt
 import pandas as pd 
 # IMPORTANT: DO NOT USE ANY OTHER 3RD PARTY PACKAGES
 # (math, random, collections, functools, etc. are perfectly fine)
 
 
 class LogisticRegression:
+    theta: npt.ArrayLike
+    iterations: int
     
-    def __init__(self):
+    def __init__(self, n_parameters: int = 10, iterations: int = 10):
         # NOTE: Feel free add any hyperparameters 
         # (with defaults) as you see fit
-        pass
+        self.theta = [0] * n_parameters # Just so I don't need an extra attribute for number of params I guess.
+        self.iterations = iterations
         
     def fit(self, X, y):
         """
@@ -21,8 +25,16 @@ class LogisticRegression:
             y (array<m>): a vector of floats containing 
                 m binary 0.0/1.0 labels
         """
-        # TODO: Implement
-        raise NotImplemented()
+        # Randomly initialize the parameters
+        self.theta = np.random.random_sample(size=len(self.theta))
+
+        for i in range(self.iterations):
+            # Predict
+            # Compute loss
+            # Adjust
+
+            if i % 10 == 0:
+                print(f"Finished iteration {i}")
     
     def predict(self, X):
         """
@@ -38,8 +50,7 @@ class LogisticRegression:
             A length m array of floats in the range [0, 1]
             with probability-like predictions
         """
-        # TODO: Implement
-        raise NotImplemented()
+        return sigmoid(self.theta * X)
         
 
         
