@@ -15,7 +15,7 @@ class LogisticRegression:
         self.theta = [0] * n_parameters # Just so I don't need an extra attribute for number of params I guess.
         self.iterations = iterations
         
-    def fit(self, X, y):
+    def fit(self, X: pd.DataFrame, y: pd.DataFrame):
         """
         Estimates parameters for the classifier
         
@@ -36,7 +36,7 @@ class LogisticRegression:
             if i % 10 == 0:
                 print(f"Finished iteration {i}")
     
-    def predict(self, X):
+    def predict(self, X: pd.DataFrame):
         """
         Generates predictions
         
@@ -56,7 +56,7 @@ class LogisticRegression:
         
 # --- Some utility functions 
 
-def binary_accuracy(y_true, y_pred, threshold=0.5):
+def binary_accuracy(y_true: npt.ArrayLike, y_pred: npt.ArrayLike, threshold=0.5):
     """
     Computes binary classification accuracy
     
@@ -73,7 +73,7 @@ def binary_accuracy(y_true, y_pred, threshold=0.5):
     return correct_predictions.mean()
     
 
-def binary_cross_entropy(y_true, y_pred, eps=1e-15):
+def binary_cross_entropy(y_true: npt.ArrayLike, y_pred: npt.ArrayLike, eps=1e-15):
     """
     Computes binary cross entropy 
     
@@ -92,7 +92,7 @@ def binary_cross_entropy(y_true, y_pred, eps=1e-15):
     )
 
 
-def sigmoid(x):
+def sigmoid(x: npt.ArrayLike | float):
     """
     Applies the logistic function element-wise
     
