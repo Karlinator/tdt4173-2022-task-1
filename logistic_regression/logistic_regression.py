@@ -1,3 +1,5 @@
+import math
+from typing import Callable
 import numpy as np 
 import numpy.typing as npt
 import pandas as pd 
@@ -6,16 +8,17 @@ import pandas as pd
 
 
 class LogisticRegression:
-    theta: npt.ArrayLike
+    theta = npt.NDArray
     iterations: int
+    alpha: float | None
     
-    def __init__(self, n_parameters: int = 10, iterations: int = 10):
+    def __init__(self, iterations: int = 1000, alpha: float | None = None):
         # NOTE: Feel free add any hyperparameters 
         # (with defaults) as you see fit
-        self.theta = [0] * n_parameters # Just so I don't need an extra attribute for number of params I guess.
         self.iterations = iterations
+        self.alpha = alpha
         
-    def fit(self, X: pd.DataFrame, y: pd.DataFrame):
+    def fit(self, X: npt.NDArray, y: npt.NDArray):
         """
         Estimates parameters for the classifier
         
@@ -25,18 +28,28 @@ class LogisticRegression:
             y (array<m>): a vector of floats containing 
                 m binary 0.0/1.0 labels
         """
-        # Randomly initialize the parameters
-        self.theta = np.random.random_sample(size=len(self.theta))
+
+        # self.theta = np.zeros((X.shape[1],))
+        self.theta = np.random.random_sample(size=(X.shape[1]))
+
+        alpha = self.alpha or 2 / np.linalg.norm(X)
+        print(f'Using alpha={alpha:.3f}')
 
         for i in range(self.iterations):
-            # Predict
-            # Compute loss
-            # Adjust
+            self.theta -= alpha * (X.T @ (self.predict(X) - y))
+            
 
-            if i % 10 == 0:
-                print(f"Finished iteration {i}")
+
+            if i % math.floor(self.iterations / 10) == 0:
+                print(f"\n\nFinished iteration {i}")
+                print(f'Parameters: {self.theta}')
+                print(f'Accuracy: {binary_accuracy(y_true=y, y_pred=self.predict(X), threshold=0.5) :.3f}')
+                print(f'Cross Entropy: {binary_cross_entropy(y_true=y, y_pred=self.predict(X)) :.3f}')
+                # pass
+        print(f"Finished iteration {self.iterations}")
+        print(f"Final parameters: {self.theta}")
     
-    def predict(self, X: pd.DataFrame):
+    def predict(self, X: npt.NDArray) -> npt.NDArray:
         """
         Generates predictions
         
@@ -50,7 +63,8 @@ class LogisticRegression:
             A length m array of floats in the range [0, 1]
             with probability-like predictions
         """
-        return sigmoid(self.theta * X)
+        X = (X - X.mean()) / (X.std())
+        return sigmoid(X @ self.theta)
         
 
         
@@ -73,7 +87,7 @@ def binary_accuracy(y_true: npt.ArrayLike, y_pred: npt.ArrayLike, threshold=0.5)
     return correct_predictions.mean()
     
 
-def binary_cross_entropy(y_true: npt.ArrayLike, y_pred: npt.ArrayLike, eps=1e-15):
+def binary_cross_entropy(y_true: npt.NDArray, y_pred: npt.NDArray, eps=1e-15):
     """
     Computes binary cross entropy 
     
