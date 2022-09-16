@@ -2,21 +2,44 @@ import math
 from typing import Callable
 import numpy as np 
 import numpy.typing as npt
-import pandas as pd 
 # IMPORTANT: DO NOT USE ANY OTHER 3RD PARTY PACKAGES
 # (math, random, collections, functools, etc. are perfectly fine)
 
+def sigmoid(x: npt.ArrayLike | float):
+    """
+    Applies the logistic function element-wise
+    
+    Hint: highly related to cross-entropy loss 
+    
+    Args:
+        x (float or array): input to the logistic function
+            the function is vectorized, so it is acceptible
+            to pass an array of any shape.
+    
+    Returns:
+        Element-wise sigmoid activations of the input 
+    """
+    return 1. / (1. + np.exp(-x))
+
+def reduced_sigmoid(x: npt.NDArray):
+    print(x)
+    return sigmoid(np.array([sum(r) for r in x]))
+
+def gauss(x: npt.NDArray | float):
+    return 2.5 * np.exp(-np.power(x, 2) / 2) / math.sqrt(2 * math.pi)
 
 class LogisticRegression:
     theta = npt.NDArray
     iterations: int
     alpha: float | None
+    distribution: Callable
     
-    def __init__(self, iterations: int = 1000, alpha: float | None = None):
+    def __init__(self, iterations: int = 1000, alpha: float | None = None, distribution: Callable = sigmoid):
         # NOTE: Feel free add any hyperparameters 
         # (with defaults) as you see fit
         self.iterations = iterations
         self.alpha = alpha
+        self.distribution = distribution
         
     def fit(self, X: npt.NDArray, y: npt.NDArray):
         """
@@ -40,7 +63,7 @@ class LogisticRegression:
             
 
 
-            if i % math.floor(self.iterations / 10) == 0:
+            if i % math.ceil(self.iterations / 10) == 0:
                 print(f"\n\nFinished iteration {i}")
                 print(f'Parameters: {self.theta}')
                 print(f'Accuracy: {binary_accuracy(y_true=y, y_pred=self.predict(X), threshold=0.5) :.3f}')
@@ -63,8 +86,7 @@ class LogisticRegression:
             A length m array of floats in the range [0, 1]
             with probability-like predictions
         """
-        X = (X - X.mean()) / (X.std())
-        return sigmoid(X @ self.theta)
+        return self.distribution((X - X.mean()) / (X.std()) @ self.theta)
         
 
         
@@ -106,20 +128,6 @@ def binary_cross_entropy(y_true: npt.NDArray, y_pred: npt.NDArray, eps=1e-15):
     )
 
 
-def sigmoid(x: npt.ArrayLike | float):
-    """
-    Applies the logistic function element-wise
-    
-    Hint: highly related to cross-entropy loss 
-    
-    Args:
-        x (float or array): input to the logistic function
-            the function is vectorized, so it is acceptible
-            to pass an array of any shape.
-    
-    Returns:
-        Element-wise sigmoid activations of the input 
-    """
-    return 1. / (1. + np.exp(-x))
+
 
         
